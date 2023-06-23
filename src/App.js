@@ -16,6 +16,7 @@ import {
  Tooltip,
  Legend
 } from 'chart.js';
+//Register Chart.js components
 ChartJS.register(
  CategoryScale,
  LinearScale,
@@ -27,14 +28,19 @@ ChartJS.register(
 );
 
 export default function App() {
+  //State variables declaration
  const [myFiles, setMyFiles] = useState([])
  const [selectedFile, setSelectedFile] = useState(null)
  const [filePath, setFilePath] = useState("/file-server/")
  const [showChartModal, setShowChartModal] = useState(false)
+ const [searchQuery, setSearchQuery] = useState('')
  
  useEffect(() => {
+  //Initialize myFiles state with data from the imported data module
   setMyFiles(data)
  }, [])
+
+ //Options for the bar chart for files
  var barChartOptions = {
   responsive: true,
   plugins: {
@@ -48,6 +54,7 @@ export default function App() {
   },
  };
 
+ //Function to determine the file type based on the file extension
  const getType = (extension) => {
   const typeMap = {
     mp3: 'audio',
@@ -57,19 +64,20 @@ export default function App() {
     jpg: 'image',
     jpeg: 'image',
     gif: 'image'
-    // Add more file extensions and their corresponding types as needed
+    // more file extensions can be added and their corresponding types as needed
   };
   return typeMap[extension.toLowerCase()] || 'unknown';
 };
-
+//Function to get file extension from the file name
 const getFileExtension = (fileName) => {
   return fileName.split('.').pop();
 };
 
+//File Upload Event Handler
  const handleFileUpload = (event) => {
   const file = event.target.files[0];
   const fileExtension = getFileExtension(file.name);
-    const fileType = getType(fileExtension);
+  const fileType = getType(fileExtension);
   const fileReader = new FileReader();
   fileReader.onload = (e) => {
     const uploadedFile = {
@@ -83,7 +91,11 @@ const getFileExtension = (fileName) => {
   };
   fileReader.readAsDataURL(file);
 };
-console.log(myFiles);
+//Search Query Change Event Handler
+const handleSearch = (event) => {
+  setSearchQuery(event.target.value);
+};
+
  return (
   <>
   {showChartModal && (
@@ -195,26 +207,39 @@ console.log(myFiles);
   >
     Delete
   </button>
+  <input
+              type="text"
+              placeholder="Search files..."
+              onChange={handleSearch}
+            />
   <input type="file" onChange={handleFileUpload} />
           </div>
      <div style={styles.fileContainer}>
       <div style={{ width: "100%", padding: 10 }}>
-       {myFiles.map((file) => {
- 
+       {myFiles
+       .filter((file) =>
+       file.name.toLowerCase().includes(searchQuery.toLowerCase())
+       )
+       .map((file) => {
         if (file.path.slice(0, filePath.length) === filePath) {
-         return (
-          <div style={styles.file} className="files" key={file.id} onClick={() => {
-           if (selectedFile && selectedFile.id === file.id) {
-            setSelectedFile(null)
-            return
-           }
-           setSelectedFile(file)
-          }}>
-           <p>{file.name}</p>
-          </div>
-         )
-        }
-       })}
+          return (
+          <div style={{
+            ...styles.file,
+            backgroundColor: searchQuery && file.name.toLowerCase().includes(searchQuery.toLowerCase())
+            ? 'lightblue'
+            : '#eee'
+          }} className="files" key={file.id} onClick={() => {
+            if (selectedFile && selectedFile.id === file.id) {
+              setSelectedFile(null)
+              return
+            }
+            setSelectedFile(file)
+            }}>
+              <p>{file.name}</p>
+              </div>
+              )
+            }
+            })}
       </div>
       {selectedFile && (
        <div style={styles.fileViewer}>
@@ -242,7 +267,8 @@ console.log(myFiles);
   </>
  );
 }
- 
+// Styles 
+
 const styles = {
  container: {
   backgroundColor: '#fff',
