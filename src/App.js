@@ -48,6 +48,42 @@ export default function App() {
   },
  };
 
+ const getType = (extension) => {
+  const typeMap = {
+    mp3: 'audio',
+    mp4: 'video',
+    pdf: 'document',
+    png: 'image',
+    jpg: 'image',
+    jpeg: 'image',
+    gif: 'image'
+    // Add more file extensions and their corresponding types as needed
+  };
+  return typeMap[extension.toLowerCase()] || 'unknown';
+};
+
+const getFileExtension = (fileName) => {
+  return fileName.split('.').pop();
+};
+
+ const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  const fileExtension = getFileExtension(file.name);
+    const fileType = getType(fileExtension);
+  const fileReader = new FileReader();
+  fileReader.onload = (e) => {
+    const uploadedFile = {
+      id: Date.now(),
+      name: file.name,
+      type: fileType,
+      path: filePath + file.name,
+      content: URL.createObjectURL(file)
+    };
+    setMyFiles([...myFiles, uploadedFile]);
+  };
+  fileReader.readAsDataURL(file);
+};
+console.log(myFiles);
  return (
   <>
   {showChartModal && (
@@ -159,6 +195,7 @@ export default function App() {
   >
     Delete
   </button>
+  <input type="file" onChange={handleFileUpload} />
           </div>
      <div style={styles.fileContainer}>
       <div style={{ width: "100%", padding: 10 }}>
@@ -182,16 +219,16 @@ export default function App() {
       {selectedFile && (
        <div style={styles.fileViewer}>
         {selectedFile.type === 'video' && (
-         <VideoPlayer path={selectedFile.path} />
+         <VideoPlayer path={selectedFile.content ? selectedFile.content : selectedFile.path } />
         )}
         {selectedFile.type === 'audio' && (
-         <AudioPlayer path={selectedFile.path} />
+         <AudioPlayer path={selectedFile.content ? selectedFile.content : selectedFile.path} />
         )}
         {selectedFile.type === 'document' && (
-         <DocumentViewer path={selectedFile.path} />
+         <DocumentViewer path={selectedFile.content ? selectedFile.content : selectedFile.path} />
         )}
         {selectedFile.type === 'image' && (
-         <ImageViewer path={selectedFile.path} />
+         <ImageViewer path={selectedFile.content ? selectedFile.content : selectedFile.path} />
         )}        
         <p style={{ fontWeight: "bold", marginTop: 10 }}>{selectedFile.name}</p>
         <p>path: <span style={{ fontStyle: "italic" }}>{selectedFile.path}</span></p>
