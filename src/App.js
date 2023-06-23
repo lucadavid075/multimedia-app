@@ -192,14 +192,7 @@ export default function App() {
         )}
         {selectedFile.type === 'image' && (
          <ImageViewer path={selectedFile.path} />
-        )}
-        {selectedFile.type === 'image' && (
-         <ImageViewer path={selectedFile.path} />
-        )}
-        {selectedFile.type === 'image' && (
-          <ImageViewer path={selectedFile.path} />
-        )}
-        
+        )}        
         <p style={{ fontWeight: "bold", marginTop: 10 }}>{selectedFile.name}</p>
         <p>path: <span style={{ fontStyle: "italic" }}>{selectedFile.path}</span></p>
         <p>file type: <span style={{fontStyle: "italic"}}>{selectedFile.type}</span></p>

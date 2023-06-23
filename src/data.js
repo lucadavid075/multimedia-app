@@ -21,18 +21,18 @@ export const data = [
       id: 4,
       name: 'Image File',
       type: 'image',
-      path: "/file-server/image.png"
+      path: "/file-server/image1.png"
     },
     {
         id: 5,
         name: 'Image File',
         type: 'image',
-        path: "/file-server/image.png"
+        path: "/file-server/image2.png"
       },
       {
         id: 6,
         name: 'Image File',
         type: 'image',
-        path: "/file-server/image.png"
+        path: "/file-server/image3.png"
       },
   ]
