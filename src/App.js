@@ -73,13 +73,51 @@ const getFileExtension = (fileName) => {
   return fileName.split('.').pop();
 };
 
-//File Upload Event Handler
+//Rename feature handler function on selected file
+const handleRename = () => {
+  if (selectedFile) {
+    const newFiles = myFiles.map(file => {
+      if (file.id === selectedFile.id) {
+        return {
+          ...file,
+          name: prompt("Enter new name")
+        }
+      }
+      return file
+    })
+    setMyFiles(newFiles)
+    setSelectedFile(null)
+  }
+}
+
+//File BreakDown handler function for all files
+const handleBreakdown = () => {
+  setShowChartModal(true)
+}
+
+//Download feature handler function on selected file
+const handleDownload = () => {
+  if (selectedFile){
+    window.open(selectedFile.path, "_blank")
+  }
+}
+
+//Delete feature handler function for selected file
+const handleDelete = () => {
+  if (selectedFile) {
+    const newFiles = myFiles.filter(file => file.id !== selectedFile.id);
+    setMyFiles(newFiles);
+    setSelectedFile(null);
+  }
+}
+
+//File Upload Event Handler Function
  const handleFileUpload = (event) => {
   const file = event.target.files[0];
   const fileExtension = getFileExtension(file.name);
   const fileType = getType(fileExtension);
   const fileReader = new FileReader();
-  fileReader.onload = (e) => {
+  fileReader.onload = () => {
     const uploadedFile = {
       id: Date.now(),
       name: file.name,
@@ -91,7 +129,7 @@ const getFileExtension = (fileName) => {
   };
   fileReader.readAsDataURL(file);
 };
-//Search Query Change Event Handler
+//Search Query Change Event Handler Function
 const handleSearch = (event) => {
   setSearchQuery(event.target.value);
 };
@@ -167,53 +205,29 @@ const handleSearch = (event) => {
       <p>{selectedFile ? selectedFile.path : filePath}</p>
      </div>
      <div style={styles.controlTools}>
+      {/*Button, Input Features for file manager app*/}
             <button style={styles.controlButton}
-              onClick={() => {
-                if (selectedFile) {
-                  const newFiles = myFiles.map(file => {
-                    if (file.id === selectedFile.id) {
-                      return {
-                        ...file,
-                        name: prompt("Enter new name")
-                      }
-                    }
-                    return file
-                  })
-                  setMyFiles(newFiles)
-                  setSelectedFile(null)
-                }
-              }}
+              onClick={handleRename}
             >Rename</button>
             <button style={styles.controlButton}
-              onClick={() => {
-                setShowChartModal(true)
-              }}
+              onClick={handleBreakdown}
             >Files Breakdown</button>
             <button style={styles.controlButton}
-              onClick={() => {
-                if (selectedFile){
-                  window.open(selectedFile.path, "_blank")
-                }
-              }}
+              onClick={handleDownload}
             >Download</button>
             <button style={styles.controlButton}
-    onClick={() => {
-      if (selectedFile) {
-        const newFiles = myFiles.filter(file => file.id !== selectedFile.id);
-        setMyFiles(newFiles);
-        setSelectedFile(null);
-      }
-    }}
-  >
-    Delete
-  </button>
-  <input
+            onClick={handleDelete}
+            >Delete</button>
+            <input
               type="text"
               placeholder="Search files..."
               onChange={handleSearch}
             />
-  <input type="file" onChange={handleFileUpload} />
-          </div>
+            <input
+              type="file"
+              onChange={handleFileUpload}
+            />
+      </div>
      <div style={styles.fileContainer}>
       <div style={{ width: "100%", padding: 10 }}>
        {myFiles
@@ -241,6 +255,7 @@ const handleSearch = (event) => {
             }
             })}
       </div>
+      {/*Previewa Selected File */}
       {selectedFile && (
        <div style={styles.fileViewer}>
         {selectedFile.type === 'video' && (
@@ -267,8 +282,8 @@ const handleSearch = (event) => {
   </>
  );
 }
-// Styles 
 
+// Styles
 const styles = {
  container: {
   backgroundColor: '#fff',
@@ -278,8 +293,7 @@ const styles = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  flexDirection: 'row',
- 
+  flexDirection: 'row', 
  },
  file: {
   backgroundColor: '#eee',
